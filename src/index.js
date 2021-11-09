@@ -72,7 +72,7 @@ app.post('/todos', checksExistsUserAccount, (request, response) => {
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
   const { user } = request;
   const { title, deadline } = request.body
-  const { id } = req.params
+  const { id } = request.params
 
   const todos = user.todos.find(todos => todos.id === id);
 
@@ -88,11 +88,33 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const { id } = request.params
+  const { user } = request;
+
+  const isDone = user.todos.find(done => done.id === id);
+
+  if(!isDone){
+    return response.status(404).json({ error: "You can't update a todo that doesnt exists!"})
+  }
+  
+  isDone.done = true
+
+  return response.json(isDone)
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const { user } = request;
+  const { id } = request.params
+
+  const deleteTodo = user.todos.find(todo => todo.id === id)
+
+  if(!deleteTodo){
+    return response.status(404).json({ error: "Todo not found, please try again!" })
+  }
+
+  user.todos.splice(deleteTodo, 1)
+
+  return response.status(204).json()
 });
 
 module.exports = app;
