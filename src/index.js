@@ -70,7 +70,21 @@ app.post('/todos', checksExistsUserAccount, (request, response) => {
 });
 
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const { user } = request;
+  const { title, deadline } = request.body
+  const { id } = req.params
+
+  const todos = user.todos.find(todos => todos.id === id);
+
+  if(!todos){
+    return response.status(404).json({ error: "You can't update an user that doesnt exists!!" })
+  }
+
+  todos.title = title
+  todos.deadLine = new Date(deadline)
+
+  return response.json(todos)
+  
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
